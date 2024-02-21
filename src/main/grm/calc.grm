@@ -1,0 +1,37 @@
+grammar Calc;
+
+@init/#
+public static int pow(int x, int base) {
+    return (int) (Math.pow(x, base));
+}
+#/
+
+expr () [int res] ~> term() exprsh(term1.res) { expr0.res = exprsh2.res; };
+
+exprsh (int acc) [int res] ~>
+      PLUS term() { exprsh0.res = acc + term2.res; } exprsh(exprsh0.res) { exprsh0.res = exprsh4.res; }
+    | MINUS term() { exprsh0.res = acc - term2.res; } exprsh(exprsh0.res) { exprsh0.res = exprsh4.res; }
+    | EPS { exprsh0.res = acc; } ;
+
+term () [int res] ~> factor() termsh(factor1.res) { term0.res = termsh2.res; } ;
+
+termsh (int acc) [int res] ~>
+      MUL factor() { termsh0.res = acc * factor2.res; } termsh(termsh0.res) { termsh0.res = termsh4.res; }
+    | DIV factor() { termsh0.res = acc / factor2.res; } termsh(termsh0.res) { termsh0.res = termsh4.res; }
+    | POW factor() termsh(factor2.res) { termsh0.res = pow(acc, termsh3.res); }
+    | EPS { termsh0.res = acc; } ;
+
+factor () [int res] ~>
+      NUM { factor0.res = Integer.parseInt(NUM1); }
+    | LP expr() RP { factor0.res = expr2.res; };
+
+NUM   ~> "(\\-)?\\d+";
+POW   ~> "\\*\\*";
+PLUS  ~> "\\+";
+MINUS ~> "\\-";
+MUL   ~> "\\*";
+DIV   ~> "/";
+LP    ~> "\\(";
+RP    ~> "\\)";
+
+skip "[ \\n\\r\\t]+";

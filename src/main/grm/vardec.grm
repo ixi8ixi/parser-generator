@@ -1,0 +1,18 @@
+grammar Vardec;
+
+s  () []  ~> k() sh() ;
+sh () []  ~> SEMICOLON l() | v() SEMICOLON l() ;
+l  () []  ~> k() sh() | EPS ;
+v  () []  ~> f() vs();
+vs () []  ~> COMMA vs() | EPS ;
+f  () []  ~> STAR f() | k();
+k  () []  ~> NAME;
+
+SEMICOLON ~> ";" ;
+COMMA     ~> "," ;
+STAR      ~> "\\*" ;
+NAME      ~> "[a-zA-Z]+";
+LBR       ~> "\\[";
+RBR       ~> "\\]";
+
+skip "[ \\n\\r\\t]+";
